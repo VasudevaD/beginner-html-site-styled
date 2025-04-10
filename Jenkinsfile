@@ -16,17 +16,15 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    def BRANCH_NAME = env.BRANCH_NAME ?: 'master' // Default to 'master' if not set
-                    def BUILD_NUMBER = env.BUILD_NUMBER ?: '1'      // Default to '1' if not set
-                    def IMAGE_TAG = "${BRANCH_NAME}-${BUILD_NUMBER}"
-                    echo "Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
-                    docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
+                    def imageTag = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                    echo "Building Docker image: ${IMAGE_NAME}:${imageTag}"
+                    docker build -t "${IMAGE_NAME}:${imageTag}" .
                     echo "Logging in to Docker Hub using access token"
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-token', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
                         sh "docker login -u \$DOCKERHUB_USERNAME -p \$DOCKERHUB_PASSWORD"
-                        echo "Pushing Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
-                        docker push "${IMAGE_NAME}:${IMAGE_TAG}"
-                        docker tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:latest"
+                        echo "Pushing Docker image: ${IMAGE_NAME}:${imageTag}"
+                        docker push "${IMAGE_NAME}:${imageTag}"
+                        docker tag "${IMAGE_NAME}:${imageTag}" "${IMAGE_NAME}:latest"
                         docker push "${IMAGE_NAME}:latest"
                     }
                 }
