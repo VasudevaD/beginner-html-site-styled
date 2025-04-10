@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USERNAME = '<vasudevad' // Docker Hub username
+        DOCKERHUB_USERNAME = 'vasudevad' // Docker Hub username
         IMAGE_NAME = "${DOCKERHUB_USERNAME}/beginner-html-site"
         IMAGE_TAG = "${BRANCH_NAME}-${BUILD_NUMBER}"
     }
