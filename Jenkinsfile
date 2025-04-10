@@ -16,7 +16,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    IMAGE_TAG = "${BRANCH_NAME}-${BUILD_NUMBER}" // Define IMAGE_TAG here
+                    IMAGE_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}" // Access environment variables using 'env'
                     echo "Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
                     docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
                     echo "Logging in to Docker Hub using access token"
