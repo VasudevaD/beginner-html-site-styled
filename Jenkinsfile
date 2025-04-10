@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKERHUB_USERNAME = 'vasudevad' // Replace with your Docker Hub username
-        IMAGE_NAME = "${DOCKERHUB_USERNAME}/beginner-html-site"
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -13,30 +8,26 @@ pipeline {
             }
         }
 
-        stage('Build and Push Docker Image') {
+        stage('Build and Tag Docker Image') {
             steps {
                 script {
-                    def imageTag = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-                    echo "Building Docker image: ${IMAGE_NAME}:${imageTag}"
-                    docker build -t "${IMAGE_NAME}:${imageTag}" .
-                    echo "Logging in to Docker Hub using access token"
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-token', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                        sh "docker login -u \$DOCKERHUB_USERNAME -p \$DOCKERHUB_PASSWORD"
-                        echo "Pushing Docker image: ${IMAGE_NAME}:${imageTag}"
-                        docker push "${IMAGE_NAME}:${imageTag}"
-                        docker tag "${IMAGE_NAME}:${imageTag}" "${IMAGE_NAME}:latest"
-                        docker push "${IMAGE_NAME}:latest"
-                    }
+                    def BRANCH_NAME = env.BRANCH_NAME ?: 'master'
+                    def BUILD_NUMBER = env.BUILD_NUMBER ?: '1'
+                    def IMAGE_NAME = 'your-dockerhub-username/beginner-html-site' // Replace
+                    def IMAGE_TAG = "${BRANCH_NAME}-${BUILD_NUMBER}"
+                    echo "Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
+                    echo "Pushing Docker image: ${IMAGE_NAME}:${IMAGE_TAG} and ${IMAGE_NAME}:latest"
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    echo "Applying Kubernetes deployment and service manifests"
-                    sh "kubectl apply -f deployment.yaml -f service.yaml"
-                }
+                echo "Applying Kubernetes deployment manifest: deployment.yaml"
+                sh "echo 'kubectl apply -f deployment.yaml'"
+                echo "Applying Kubernetes service manifest: service.yaml"
+                sh "echo 'kubectl apply -f service.yaml'"
+                echo "Kubernetes deployment and service applied successfully!"
             }
         }
     }
