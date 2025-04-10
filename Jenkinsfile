@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKERHUB_USERNAME = 'vasudevad' // Docker Hub username
         IMAGE_NAME = "${DOCKERHUB_USERNAME}/beginner-html-site"
-        IMAGE_TAG = "${BRANCH_NAME}-${BUILD_NUMBER}"
     }
 
     stages {
@@ -17,6 +16,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
+                    IMAGE_TAG = "${BRANCH_NAME}-${BUILD_NUMBER}" // Define IMAGE_TAG here
                     echo "Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
                     docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
                     echo "Logging in to Docker Hub using access token"
