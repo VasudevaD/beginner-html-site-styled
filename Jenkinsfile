@@ -16,7 +16,9 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    def IMAGE_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}" // Define IMAGE_TAG entirely within the script block
+                    def BRANCH = Jenkins.instance.getItemByFullName(env.JOB_NAME).getLastBuild().getBranch().getName()
+                    def BUILD = env.BUILD_NUMBER
+                    def IMAGE_TAG = "${BRANCH}-${BUILD}"
                     echo "Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
                     docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
                     echo "Logging in to Docker Hub using access token"
